@@ -1,19 +1,10 @@
-import React, { Component } from 'react';
-import { Card, CardImg, CardImgOverlay, CardText, CardBody, CardTitle } from 'reactstrap';
+import React from 'react';
+import { Card, CardImg, CardText, CardBody, CardTitle } from 'reactstrap';
 
 
-class Dishdetail extends Component {
-
-    constructor(props) {
-        super(props);
-
-        this.state = {
-        };
-
-    }
-
-    renderDish(dish) {
-        return (
+function RenderDish({ dish }) {
+    return (
+        <div className="col-12 col-md-5 m-1">
             <Card>
                 <CardImg width="100%" src={dish.image} alt={dish.name} />
                 <CardBody>
@@ -21,52 +12,47 @@ class Dishdetail extends Component {
                     <CardText>{dish.description}</CardText>
                 </CardBody>
             </Card>
-        );
+        </div>
+    );
+}
 
-    }
+function RenderComments({ comments }) {
 
-    renderComments(comments) {
-
-        const commentCustom = comments.map((comment) => {
-            const date = new Date(comment.date).toLocaleDateString();
-            return (
-                <ul key={comment.id} className="list-unstyled">
-                    <li>{comment.comment}</li>
-                    <br></br>
-                    <li>-- {comment.author}, {comment.date}</li> 
-                </ul>
-            );
-        });
-
+    const commentCustom = comments.map((comment) => {
         return (
-            <div>
-                <h4>Comments</h4>
-                { commentCustom}
+            <ul key={comment.id} className="list-unstyled">
+                <li>{comment.comment}</li>
+                <br></br>
+                <li>-- {comment.author}, {new Intl.DateTimeFormat('de-DE', { year: 'numeric', month: 'short', day: '2-digit' }).format(new Date(Date.parse(comment.date)))}</li>
+            </ul>
+        );
+    });
+
+    return (
+        <div className="col-12 col-md-5 m-1">
+            <h4>Comments</h4>
+            { commentCustom}
+        </div>
+    );
+
+}
+
+const Dishdetail = (props) => {
+    if (props.dish != null) {
+        return (
+            <div className="container">
+                <div className="row">
+                    <RenderDish dish={props.dish} />
+                    <RenderComments comments={props.dish.comments} />
+                </div>
             </div>
         );
-
-    }
-
-    render() {
-
-        if (this.props.dish != null) {
-
-            return (
-                <div className="row">
-                    <div className="col-12 col-md-5 m-1">
-                        {this.renderDish(this.props.dish)}
-                    </div>
-                    <div className="col-12 col-md-5 m-1">
-                        {this.renderComments(this.props.dish.comments)}
-                    </div>
-                </div>
-            );
-        } else {
-            return (
-                <div></div>
-            );
-        }
+    } else {
+        return (
+            <div></div>
+        );
     }
 }
+
 
 export default Dishdetail;
