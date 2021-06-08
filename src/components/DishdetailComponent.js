@@ -25,7 +25,7 @@ function RenderDish({ dish }) {
     );
 }
 
-function RenderComments({ comments }) {
+function RenderComments({ comments, addComment, dishId }) {
 
     const commentCustom = comments.map((comment) => {
         return (
@@ -41,20 +41,19 @@ function RenderComments({ comments }) {
         <div className="col-12 col-md-5 m-1">
             <h4>Comments</h4>
             { commentCustom}
-            <CommentForm />
+            <CommentForm dishId={dishId} addComment={addComment} />
         </div>
     );
 
 }
 
-function CommentForm() {
+function CommentForm({ dishId, addComment }) {
     const [modal, setModal] = useState(false);
 
     const toggleModal = () => setModal(!modal);
 
     const handleSubmit = (values) => {
-        console.log("Current State is: " + JSON.stringify(values));
-        alert("Current State is: " + JSON.stringify(values));
+        addComment(dishId, values.rating, values.name, values.comment);
     }
 
     return (
@@ -86,20 +85,20 @@ function CommentForm() {
                                 <Control.text model=".name" id="name" name="name"
                                     placeholder="Your Name"
                                     className="form-control"
-                                    validators= {{
+                                    validators={{
                                         required, minLength: minLength(2), maxLength: maxLength(15)
                                     }}
                                 />
-                            <Errors
-                                className="text-danger"
-                                model=".name"
-                                show="touched"
-                                messages={{
-                                    required: 'Required',
-                                    minLength: 'Must be greater than 2 characters',
-                                    maxLength: 'Must be 15 characters or less'
-                                }}
-                            />
+                                <Errors
+                                    className="text-danger"
+                                    model=".name"
+                                    show="touched"
+                                    messages={{
+                                        required: 'Required',
+                                        minLength: 'Must be greater than 2 characters',
+                                        maxLength: 'Must be 15 characters or less'
+                                    }}
+                                />
                             </Col>
                         </Row>
                         <Row className="form-group">
@@ -140,7 +139,10 @@ const Dishdetail = (props) => {
                 </div>
                 <div className="row">
                     <RenderDish dish={props.dish} />
-                    <RenderComments comments={props.comments} />
+                    <RenderComments comments={props.comments}
+                        addComment={props.addComment}
+                        dishId={props.dish.id}
+                    />
                 </div>
             </div>
         );
