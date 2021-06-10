@@ -27,35 +27,38 @@ function RenderDish({ dish }) {
     );
 }
 
-function RenderComments({ comments, addComment, dishId }) {
-
-    const commentCustom = comments.map((comment) => {
+function RenderComments({ comments, postComment, dishId }) {
+    if (comments != null) {
         return (
-            <ul key={comment.id} className="list-unstyled">
-                <li>{comment.comment}</li>
-                <br></br>
-                <li>-- {comment.author}, {new Intl.DateTimeFormat('de-DE', { year: 'numeric', month: 'short', day: '2-digit' }).format(new Date(Date.parse(comment.date)))}</li>
-            </ul>
+            <div className="col-12 col-md-5 m-1">
+                <h4>Comments</h4>
+                <ul className="list-unstyled">
+                    {comments.map((comment) => {
+                        return (
+                            <li key={comment.id}>
+                                <p>{comment.comment}</p>
+                                <p>-- {comment.author}, {new Intl.DateTimeFormat('de-DE', { year: 'numeric', month: 'short', day: '2-digit' }).format(new Date(Date.parse(comment.date)))}</p>
+                            </li>
+                        );
+                    })};
+                </ul>
+                <CommentForm dishId={dishId} postComment={postComment} />
+            </div>
         );
-    });
-
-    return (
-        <div className="col-12 col-md-5 m-1">
-            <h4>Comments</h4>
-            { commentCustom}
-            <CommentForm dishId={dishId} addComment={addComment} />
-        </div>
-    );
-
+    } else {
+        return (
+            <div></div>
+        );
+    }
 }
 
-function CommentForm({ dishId, addComment }) {
+function CommentForm({ dishId, postComment }) {
     const [modal, setModal] = useState(false);
 
     const toggleModal = () => setModal(!modal);
 
     const handleSubmit = (values) => {
-        addComment(dishId, values.rating, values.name, values.comment);
+        postComment(dishId, values.rating, values.author, values.comment);
     }
 
     return (
@@ -84,7 +87,7 @@ function CommentForm({ dishId, addComment }) {
                         <Row className="form-group">
                             <Col md={12}>
                                 <Label htmlFor="name">Your Name</Label>
-                                <Control.text model=".name" id="name" name="name"
+                                <Control.text model=".author" id="author" name="author"
                                     placeholder="Your Name"
                                     className="form-control"
                                     validators={{
@@ -93,7 +96,7 @@ function CommentForm({ dishId, addComment }) {
                                 />
                                 <Errors
                                     className="text-danger"
-                                    model=".name"
+                                    model=".author"
                                     show="touched"
                                     messages={{
                                         required: 'Required',
@@ -140,36 +143,30 @@ const Dishdetail = (props) => {
                     <h4>{props.errMess}</h4>
                 </div>
             </div>
-        );       
+        );
     }
-    if (props.dish != null) {
-        return (
-            <div className="container">
-                <div className="row">
-                    <Breadcrumb>
-                        <BreadcrumbItem><Link to="/home">Home</Link></BreadcrumbItem>
-                        <BreadcrumbItem><Link to="/menu">Menu</Link></BreadcrumbItem>
-                        <BreadcrumbItem active>{props.dish.name}</BreadcrumbItem>
-                    </Breadcrumb>
-                    <div className="col-12">
-                        <h3>{props.dish.name}</h3>
-                        <hr />
-                    </div>
-                </div>
-                <div className="row">
-                    <RenderDish dish={props.dish} />
-                    <RenderComments comments={props.comments}
-                        addComment={props.addComment}
-                        dishId={props.dish.id}
-                    />
+    return (
+        <div className="container">
+            <div className="row">
+                <Breadcrumb>
+                    <BreadcrumbItem><Link to="/home">Home</Link></BreadcrumbItem>
+                    <BreadcrumbItem><Link to="/menu">Menu</Link></BreadcrumbItem>
+                    <BreadcrumbItem active>{props.dish.name}</BreadcrumbItem>
+                </Breadcrumb>
+                <div className="col-12">
+                    <h3>{props.dish.name}</h3>
+                    <hr />
                 </div>
             </div>
-        );
-    } else {
-        return (
-            <div></div>
-        );
-    }
+            <div className="row">
+                <RenderDish dish={props.dish} />
+                <RenderComments comments={props.comments}
+                    postComment={props.postComment}
+                    dishId={props.dish.id}
+                />
+            </div>
+        </div>
+    );
 }
 
 
